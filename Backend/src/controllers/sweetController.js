@@ -65,3 +65,30 @@ exports.searchSweets = async (req, res) => {
     });
   }
 };
+
+exports.updateSweet = async (req, res) => {
+  try {
+    const sweet = await Sweet.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    
+    if (!sweet) {
+      return res.status(404).json({
+        success: false,
+        message: 'Sweet not found'
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: sweet
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
