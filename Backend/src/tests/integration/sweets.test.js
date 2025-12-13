@@ -266,3 +266,59 @@ describe('PUT /api/sweets/:id', () => {
     expect(response.status).toBe(404);
   });
 });
+
+
+
+
+describe('DELETE /api/sweets/:id', () => {
+  let sweetId;
+
+  // Arrange
+  beforeEach(async () => {
+    const sweet = await Sweet.create({
+      name: 'Chocolate Bar',
+      category: 'Chocolate',
+      price: 2.99,
+      quantity: 100
+    });
+    sweetId = sweet._id;
+  });
+
+  test('should delete sweet as admin', async () => {
+    // Act
+    const response = await request(app)
+      .delete(`/api/sweets/${sweetId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+
+    // Assert
+    const deletedSweet = await Sweet.findById(sweetId);
+    expect(deletedSweet).toBeNull();
+  });
+
+  test('should fail as regular user', async () => {
+    // Act
+    const response = await request(app)
+      .delete(`/api/sweets/${sweetId}`)
+      .set('Authorization', `Bearer ${userToken}`);
+
+    // Assert
+    expect(response.status).toBe(403);
+
+    // Assert
+    const sweet = await Sweet.findById(sweetId);
+    expect(sweet).not.toBeNull();
+  });
+
+  test('should fail without authentication', async () => {
+    // Act
+    const response = await request(app)
+      .delete(`/api/sweets/${sweetId}`);
+
+    // Assert
+    expect(response.status).toBe(401);
+  });
+});
