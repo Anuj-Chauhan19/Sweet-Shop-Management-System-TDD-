@@ -387,3 +387,106 @@ describe('POST /api/sweets/:id/purchase', () => {
     expect(response.status).toBe(401);
   });
 });
+
+
+
+describe('POST /api/sweets/:id/restock', () => {
+  let sweetId;
+
+  // Arrange
+  beforeEach(async () => {
+    const sweet = await Sweet.create({
+      name: 'Chocolate Bar',
+      category: 'Chocolate',
+      price: 2.99,
+      quantity: 10
+    });
+    sweetId = sweet._id;
+  });
+
+  test('should restock sweet as admin', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ quantity: 50 });
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.data.quantity).toBe(60); // 10 + 50 = 60
+  });
+
+  test('should fail as regular user', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ quantity: 50 });
+
+    // Assert
+    expect(response.status).toBe(403);
+    expect(response.body.success).toBe(false);
+
+    // Assert: Verify database remains unchanged
+    const sweet = await Sweet.findById(sweetId);
+    expect(sweet.quantity).toBe(10);
+  });
+
+  test('should fail without quantity', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({}); // Missing quantity
+
+    // Assert
+    expect(response.status).toBe(400);
+  });
+
+  test('should fail with invalid quantity', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ quantity: -10 }); // Negative not allowed for restock
+
+    // Assert
+    expect(response.status).toBe(400);
+  });
+
+  test('should fail with zero quantity', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ quantity: 0 });
+
+    // Assert
+    expect(response.status).toBe(400);
+  });
+
+  test('should fail without authentication', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/restock`)
+      .send({ quantity: 50 });
+
+    // Assert
+    expect(response.status).toBe(401);
+  });
+
+  test('should fail with non-existent sweet', async () => {
+    // Arrange
+    const fakeId = new mongoose.Types.ObjectId();
+
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${fakeId}/restock`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ quantity: 50 });
+
+    // Assert
+    expect(response.status).toBe(404);
+  });
+});
