@@ -147,3 +147,62 @@ describe('POST /api/sweets', () => {
     expect(response.status).toBe(400);
   });
 });
+
+
+
+
+describe('GET /api/sweets/search', () => {
+  // Arrange: Seed the database with a variety of sweets for filtering
+  beforeEach(async () => {
+    await Sweet.create([
+      { name: 'Chocolate Bar', category: 'Chocolate', price: 2.99, quantity: 100 },
+      { name: 'Dark Chocolate', category: 'Chocolate', price: 3.99, quantity: 50 },
+      { name: 'Gummy Bears', category: 'Gummy', price: 1.99, quantity: 75 },
+      { name: 'Lollipop', category: 'Lollipop', price: 0.99, quantity: 200 }
+    ]);
+  });
+
+  test('should search by name', async () => {
+    // Act: Request sweets matching the name "chocolate"
+    const response = await request(app)
+      .get('/api/sweets/search')
+      .query({ name: 'chocolate' });
+
+    // Assert: Verify status 200 and correct count (should find 2 items)
+    expect(response.status).toBe(200);
+    expect(response.body.count).toBe(2);
+  });
+
+  test('should search by category', async () => {
+    // Act
+    const response = await request(app)
+      .get('/api/sweets/search')
+      .query({ category: 'Chocolate' });
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.count).toBe(2);
+  });
+
+  test('should search by price range', async () => {
+    // Act
+    const response = await request(app)
+      .get('/api/sweets/search')
+      .query({ minPrice: 2, maxPrice: 4 });
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.data.every(s => s.price >= 2 && s.price <= 4)).toBe(true);
+  });
+
+  test('should combine multiple search criteria', async () => {
+    // Act
+    const response = await request(app)
+      .get('/api/sweets/search')
+      .query({ name: 'chocolate', minPrice: 3 });
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.count).toBe(1);
+  });
+});
