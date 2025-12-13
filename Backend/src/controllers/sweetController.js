@@ -30,3 +30,38 @@ exports.createSweet = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.searchSweets = async (req, res) => {
+  try {
+    const { name, category, minPrice, maxPrice } = req.query;
+    
+    let query = {};
+    
+    if (name) {
+      query.name = { $regex: name, $options: 'i' };
+    }
+    
+    if (category) {
+      query.category = category;
+    }
+    
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+    
+    const sweets = await Sweet.find(query).sort({ createdAt: -1 });
+    
+    res.status(200).json({
+      success: true,
+      count: sweets.length,
+      data: sweets
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

@@ -152,7 +152,7 @@ describe('POST /api/sweets', () => {
 
 
 describe('GET /api/sweets/search', () => {
-  // Arrange: Seed the database with a variety of sweets for filtering
+  // Arrange
   beforeEach(async () => {
     await Sweet.create([
       { name: 'Chocolate Bar', category: 'Chocolate', price: 2.99, quantity: 100 },
@@ -163,12 +163,12 @@ describe('GET /api/sweets/search', () => {
   });
 
   test('should search by name', async () => {
-    // Act: Request sweets matching the name "chocolate"
+    // Act
     const response = await request(app)
       .get('/api/sweets/search')
       .query({ name: 'chocolate' });
 
-    // Assert: Verify status 200 and correct count (should find 2 items)
+    // Assert
     expect(response.status).toBe(200);
     expect(response.body.count).toBe(2);
   });
