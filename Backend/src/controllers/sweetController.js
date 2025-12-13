@@ -138,3 +138,36 @@ exports.purchaseSweet = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+exports.restockSweet = async (req, res, next) => {
+  try {
+    const { quantity } = req.body;
+    
+    
+    if (!quantity || quantity <= 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Please provide a valid positive quantity' 
+      });
+    }
+
+    const sweet = await Sweet.findById(req.params.id);
+
+    if (!sweet) {
+      return res.status(404).json({ success: false, message: 'Sweet not found' });
+    }
+
+   
+    sweet.quantity += Number(quantity);
+    await sweet.save();
+
+    res.status(200).json({ 
+      success: true, 
+      data: sweet 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
