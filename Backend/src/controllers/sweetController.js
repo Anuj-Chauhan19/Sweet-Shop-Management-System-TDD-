@@ -16,3 +16,17 @@ exports.getAllSweets = async (req, res, next) => {
     next(error);
   }
 };
+
+
+exports.createSweet = async (req, res, next) => {
+  try {
+    const sweet = await Sweet.create(req.body);
+    
+    res.status(201).json({
+      success: true,
+      data: sweet
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -80,7 +80,7 @@ describe('GET /api/sweets', () => {
 
 describe('POST /api/sweets', () => {
   test('should create a sweet with valid data', async () => {
-    // Arrange: Define valid sweet data
+    // Arrange
     const sweetData = {
       name: 'Chocolate Bar',
       category: 'Chocolate',
@@ -89,47 +89,47 @@ describe('POST /api/sweets', () => {
       description: 'Delicious milk chocolate'
     };
 
-    // Act: Send POST request with authorization token
+    // Act
     const response = await request(app)
       .post('/api/sweets')
       .set('Authorization', `Bearer ${userToken}`)
       .send(sweetData);
 
-    // Assert: Check for 201 Created status and correct response body
+    // Assert
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.data.name).toBe(sweetData.name);
   });
 
   test('should fail without authentication', async () => {
-    // Arrange: Define sweet data
+    // Arrange
     const payload = { name: 'Chocolate', category: 'Chocolate', price: 2.99 };
 
-    // Act: Send POST request WITHOUT authorization header
+    // Act
     const response = await request(app)
       .post('/api/sweets')
       .send(payload);
 
-    // Assert: Check for 401 Unauthorized status
+    // Assert
     expect(response.status).toBe(401);
   });
 
   test('should fail with missing required fields', async () => {
-    // Arrange: Define data missing 'price' and 'category'
+    // Arrange
     const incompleteData = { name: 'Chocolate' };
 
-    // Act: Send POST request with valid token but invalid data
+    // Act
     const response = await request(app)
       .post('/api/sweets')
       .set('Authorization', `Bearer ${userToken}`)
       .send(incompleteData);
 
-    // Assert: Check for 400 Bad Request status
+    // Assert
     expect(response.status).toBe(400);
   });
 
   test('should fail with negative price', async () => {
-    // Arrange: Define data with invalid negative price
+    // Arrange
     const invalidData = {
       name: 'Chocolate Bar',
       category: 'Chocolate',
@@ -137,13 +137,13 @@ describe('POST /api/sweets', () => {
       quantity: 100
     };
 
-    // Act: Send POST request with invalid data
+    // Act
     const response = await request(app)
       .post('/api/sweets')
       .set('Authorization', `Bearer ${userToken}`)
       .send(invalidData);
 
-    // Assert: Check for 400 Bad Request status (handled by Mongoose validation)
+    // Assert
     expect(response.status).toBe(400);
   });
 });
