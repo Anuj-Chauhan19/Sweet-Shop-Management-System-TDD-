@@ -42,7 +42,7 @@ exports.searchSweets = async (req, res) => {
     }
     
     if (category) {
-      query.category = category;
+      query.category = { $regex: category, $options: 'i' };
     }
     
     if (minPrice || maxPrice) {
@@ -59,10 +59,7 @@ exports.searchSweets = async (req, res) => {
       data: sweets
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
@@ -86,9 +83,27 @@ exports.updateSweet = async (req, res) => {
       data: sweet
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
+    next();
+  }
+};
+
+exports.deleteSweet = async (req, res) => {
+  try {
+    const sweet = await Sweet.findByIdAndDelete(req.params.id);
+    
+    if (!sweet) {
+      return res.status(404).json({
+        success: false,
+        message: 'Sweet not found'
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data : {},
+      message: 'Sweet deleted successfully'
     });
+  } catch (error) {
+    next(error);
   }
 };

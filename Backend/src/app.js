@@ -18,6 +18,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sweets', sweetRoutes);
 
 
+
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
