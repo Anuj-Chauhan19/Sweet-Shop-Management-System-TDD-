@@ -322,3 +322,68 @@ describe('DELETE /api/sweets/:id', () => {
     expect(response.status).toBe(401);
   });
 });
+
+
+describe('POST /api/sweets/:id/purchase', () => {
+  let sweetId;
+
+  // Arrange
+  beforeEach(async () => {
+    const sweet = await Sweet.create({
+      name: 'Chocolate Bar',
+      category: 'Chocolate',
+      price: 2.99,
+      quantity: 100
+    });
+    sweetId = sweet._id;
+  });
+
+  test('should purchase sweet with available quantity', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/purchase`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ quantity: 5 });
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.data.quantity).toBe(95);
+  });
+
+  test('should purchase 1 unit by default', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/purchase`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({});
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.data.quantity).toBe(99);
+  });
+
+  test('should fail with insufficient quantity', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/purchase`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ quantity: 150 });
+
+    // Assert
+    expect(response.status).toBe(400);
+    expect(response.body.message).toContain('Insufficient');
+    
+    const sweet = await Sweet.findById(sweetId);
+    expect(sweet.quantity).toBe(100);
+  });
+
+  test('should fail without authentication', async () => {
+    // Act
+    const response = await request(app)
+      .post(`/api/sweets/${sweetId}/purchase`)
+      .send({ quantity: 1 });
+
+    // Assert
+    expect(response.status).toBe(401);
+  });
+});
