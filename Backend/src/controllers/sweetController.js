@@ -107,3 +107,34 @@ exports.deleteSweet = async (req, res) => {
     next(error);
   }
 };
+
+
+
+exports.purchaseSweet = async (req, res, next) => {
+  try {
+    const { quantity } = req.body;
+    
+    const purchaseQty = quantity && quantity > 0 ? quantity : 1;
+
+    const sweet = await Sweet.findById(req.params.id);
+
+    if (!sweet) {
+      return res.status(404).json({ success: false, message: 'Sweet not found' });
+    }
+
+    
+    if (sweet.quantity < purchaseQty) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Insufficient stock. Only ${sweet.quantity} left.` 
+      });
+    }
+
+    sweet.quantity -= purchaseQty;
+    await sweet.save();
+
+    res.status(200).json({ success: true, data: sweet });
+  } catch (error) {
+    next(error);
+  }
+};
