@@ -206,3 +206,63 @@ describe('GET /api/sweets/search', () => {
     expect(response.body.count).toBe(1);
   });
 });
+
+
+
+describe('PUT /api/sweets/:id', () => {
+  let sweetId;
+
+  // Arrange
+  beforeEach(async () => {
+    const sweet = await Sweet.create({
+      name: 'Chocolate Bar',
+      category: 'Chocolate',
+      price: 2.99,
+      quantity: 100
+    });
+    sweetId = sweet._id;
+  });
+
+  test('should update sweet with valid data', async () => {
+    // Arrange
+    const updates = {
+      name: 'Dark Chocolate Bar',
+      price: 3.99
+    };
+
+    // Act
+    const response = await request(app)
+      .put(`/api/sweets/${sweetId}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send(updates);
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.data.name).toBe(updates.name);
+    expect(response.body.data.price).toBe(updates.price);
+  });
+
+  test('should fail without authentication', async () => {
+    // Act
+    const response = await request(app)
+      .put(`/api/sweets/${sweetId}`)
+      .send({ name: 'Updated' });
+
+    // Assert
+    expect(response.status).toBe(401);
+  });
+
+  test('should fail with non-existent ID', async () => {
+    // Arrange
+    const fakeId = new mongoose.Types.ObjectId();
+
+    // Act
+    const response = await request(app)
+      .put(`/api/sweets/${fakeId}`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ name: 'Updated' });
+
+    // Assert
+    expect(response.status).toBe(404);
+  });
+});
