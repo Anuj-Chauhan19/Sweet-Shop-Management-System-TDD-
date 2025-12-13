@@ -38,7 +38,6 @@ const sweetSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Fix: Use CommonJS export and Singleton pattern to prevent test errors
 const Sweet = mongoose.models.Sweet || mongoose.model('Sweet', sweetSchema);
 
 module.exports = Sweet;

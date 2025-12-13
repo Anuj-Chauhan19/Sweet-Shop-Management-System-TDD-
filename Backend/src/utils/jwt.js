@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 
 const generateToken = (payload) => {
-  // FIX: If process.env.JWT_SECRET is missing, use 'secret' as a backup
   const secret = process.env.JWT_SECRET || 'secret';
   
   return jwt.sign(payload, secret, {
@@ -11,7 +10,7 @@ const generateToken = (payload) => {
 
 const verifyToken = (token) => {
   try {
-    // FIX: Must use the same fallback logic here
+    
     const secret = process.env.JWT_SECRET || 'secret';
     
     return jwt.verify(token, secret);

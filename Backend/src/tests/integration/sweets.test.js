@@ -1,7 +1,7 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const app = require('../../app'); // Ensure path is correct
+const app = require('../../app'); 
 const Sweet = require('../../models/sweet');
 const User = require('../../models/user');
 const { generateToken } = require('../../utils/jwt');
@@ -29,7 +29,7 @@ beforeAll(async () => {
     role: 'admin'
   });
   
-  // Note: generateToken uses the fallback 'secret' if env is missing, which is fine for tests
+  
   userToken = generateToken({ userId: user._id, role: 'user' });
   adminToken = generateToken({ userId: admin._id, role: 'admin' });
 });
