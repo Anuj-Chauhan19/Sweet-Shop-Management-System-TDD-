@@ -1,11 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "src/server.js",
- "type": "module",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node src/server.js",
-  "dev": "nodemon server.js",
+    "start": "node src/app.js",
+  "dev": "nodemon src/app.js",
   "test": "jest --watchAll"
   },
   "keywords": [],
