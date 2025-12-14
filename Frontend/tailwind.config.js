@@ -7,9 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#ec4899', // Pink-500
-        secondary: '#8b5cf6', // Violet-500
-      }
+        primary: '#f97316', 
+        secondary: '#f59e0b',
+      },
+      // ADD THIS SECTION
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'],
+      },
     },
   },
   plugins: [],

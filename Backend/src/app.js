@@ -28,70 +28,7 @@ app.get('/health', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// --- SEEDING FUNCTION (FORCE MODE) ---
-const seedSweets = async () => {
-  try {
-    // 1. Log that we are starting
-    console.log('🔄 Checking database...');
 
-    // 2. Force Clear the collection (Fixes "phantom" data issues)
-    await Sweet.deleteMany({});
-    console.log('🗑️  Cleared existing data');
-
-    // 3. Define the sweets
-    const initialSweets = [
-      {
-        name: 'Galaxy Silk',
-        category: 'Chocolate',
-        price: 2.50,
-        quantity: 50,
-        description: 'Smooth and silky milk chocolate bar.'
-      },
-      {
-        name: 'Rainbow Gummy Bears',
-        category: 'Gummy',
-        price: 1.99,
-        quantity: 100,
-        description: 'Chewy and colorful fruit-flavored bears.'
-      },
-      {
-        name: 'Mega Lollipop',
-        category: 'Lollipop',
-        price: 0.99,
-        quantity: 200,
-        description: 'Giant swirl lollipop with strawberry flavor.'
-      },
-      {
-        name: 'Sour Worms',
-        category: 'Gummy',
-        price: 1.50,
-        quantity: 75,
-        description: 'Tangy sour worms that pack a punch.'
-      },
-      {
-        name: 'Dark Truffles',
-        category: 'Chocolate',
-        price: 5.99,
-        quantity: 30,
-        description: 'Premium dark chocolate truffles with ganache.'
-      },
-      {
-        name: 'Marshmallow Fluff',
-        category: 'Marshmallow',
-        price: 3.00,
-        quantity: 40,
-        description: 'Soft and fluffy vanilla marshmallows.'
-      }
-    ];
-
-    // 4. Insert them
-    await Sweet.insertMany(initialSweets);
-    console.log('🍭 Database FORCIBLY Seeded with Initial Sweets!');
-    
-  } catch (error) {
-    console.error('❌ Seeding Error:', error);
-  }
-};
 
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
